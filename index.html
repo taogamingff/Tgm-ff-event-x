@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Free Fire Events - Cập Nhật Sự Kiện 24/24</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <img src="https://ff.garena.com/images/logo.png" alt="Free Fire Logo" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ctext y=%22.9em%22 font-size=%2290%22%3E🔥%3C/text%3E%3C/svg%3E'">
+                    <h1>FF Events</h1>
+                </div>
+                <div class="header-status">
+                    <span class="status-dot"></span>
+                    <span>Hoạt động 24/24</span>
+                </div>
+                <div class="header-actions">
+                    <button class="btn-refresh" onclick="refreshEvents()">
+                        <i class="fas fa-sync-alt"></i> Làm mới
+                    </button>
+                    <button class="btn-add-event" onclick="openAddEventModal()">
+                        <i class="fas fa-plus"></i> Thêm sự kiện
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <!-- Tab Navigation -->
+            <div class="tab-navigation">
+                <button class="tab-btn active" data-tab="ongoing">
+                    <i class="fas fa-fire"></i> Đang Diễn Ra
+                    <span class="badge" id="ongoing-count">0</span>
+                </button>
+                <button class="tab-btn" data-tab="upcoming">
+                    <i class="fas fa-clock"></i> Sắp Diễn Ra
+                    <span class="badge" id="upcoming-count">0</span>
+                </button>
+                <button class="tab-btn" data-tab="all">
+                    <i class="fas fa-list"></i> Tất Cả
+                    <span class="badge" id="all-count">0</span>
+                </button>
+            </div>
+
+            <!-- Search and Filter -->
+            <div class="search-filter">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchInput" placeholder="Tìm kiếm sự kiện..." oninput="filterEvents()">
+                </div>
+                <select id="filterCategory" onchange="filterEvents()">
+                    <option value="all">Tất cả danh mục</option>
+                    <option value="update">Cập nhật</option>
+                    <option value="event">Sự kiện</option>
+                    <option value="promotion">Khuyến mãi</option>
+                    <option value="special">Đặc biệt</option>
+                </select>
+            </div>
+
+            <!-- Events Grid -->
+            <div id="eventsGrid" class="events-grid">
+                <!-- Events will be dynamically loaded here -->
+            </div>
+
+            <!-- Loading Spinner -->
+            <div id="loadingSpinner" class="loading-spinner" style="display: none;">
+                <div class="spinner"></div>
+                <p>Đang tải sự kiện...</p>
+            </div>
+
+            <!-- No Events Message -->
+            <div id="noEvents" class="no-events" style="display: none;">
+                <i class="fas fa-calendar-times"></i>
+                <p>Không có sự kiện nào</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Add/Edit Event Modal -->
+    <div id="eventModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Thêm Sự Kiện Mới</h2>
+                <button class="modal-close" onclick="closeEventModal()">&times;</button>
+            </div>
+            <form id="eventForm" onsubmit="saveEvent(event)">
+                <input type="hidden" id="eventId">
+                <div class="form-group">
+                    <label for="eventName">Tên sự kiện:</label>
+                    <input type="text" id="eventName" required placeholder="Nhập tên sự kiện">
+                </div>
+                <div class="form-group">
+                    <label for="eventDescription">Mô tả:</label>
+                    <textarea id="eventDescription" rows="3" placeholder="Mô tả sự kiện"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="eventBannerUrl">Link Banner (URL hình ảnh):</label>
+                    <input type="url" id="eventBannerUrl" placeholder="https://example.com/banner.jpg">
+                    <button type="button" class="btn-copy" onclick="copyBannerUrl()">
+                        <i class="fas fa-copy"></i> Sao chép link
+                    </button>
+                </div>
+                <div class="form-group">
+                    <label for="eventCategory">Danh mục:</label>
+                    <select id="eventCategory">
+                        <option value="update">Cập nhật</option>
+                        <option value="event">Sự kiện</option>
+                        <option value="promotion">Khuyến mãi</option>
+                        <option value="special">Đặc biệt</option>
+                    </select>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="bannerStartDate">Banner bắt đầu:</label>
+                        <input type="datetime-local" id="bannerStartDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="eventStartDate">Sự kiện bắt đầu:</label>
+                        <input type="datetime-local" id="eventStartDate" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="eventEndDate">Sự kiện kết thúc:</label>
+                        <input type="datetime-local" id="eventEndDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="bannerEndDate">Banner xóa (auto):</label>
+                        <input type="datetime-local" id="bannerEndDate" readonly>
+                        <small>Auto tính: sau khi kết thúc 4-5 ngày</small>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-cancel" onclick="closeEventModal()">Hủy</button>
+                    <button type="submit" class="btn-save">Lưu sự kiện</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast"></div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 Free Fire Events - Cập nhật 24/24 | Không liên kết chính thức với Garena</p>
+        </div>
+    </footer>
+
+    <script src="js/events.js"></script>
+    <script src="js/countdown.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
