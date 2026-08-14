@@ -1,0 +1,14 @@
+[
+  {
+    "id": "event_default_1",
+    "name": "Cập nhật OB45 - Chế độ mới",
+    "description": "Cập nhật phiên bản OB45 với nhiều tính năng mới hấp dẫn",
+    "bannerUrl": "https://ff.garena.com/images/ob45.jpg",
+    "category": "update",
+    "bannerStartDate": "2024-01-01T00:00",
+    "eventStartDate": "2024-01-01T00:00",
+    "eventEndDate": "2024-01-31T23:59",
+    "bannerEndDate": "2024-02-05T23:59",
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  }
+]
